@@ -1,40 +1,27 @@
-# Import dependencies
 import pandas as pd
-import numpy as np
-
-# Load the dataset in a dataframe object and include only 3 features as mentioned
-url = "C://CDAP_API//modelK_1//PlayerData_1.csv"
-df = pd.read_csv(url)
-include = ['scoreLevel', 'timeLevel', 'difficultyLevel'] # Only 3 features
-df_ = df[include]
-
-# Data Preprocessing
-categoricals = []
-for col, col_type in df_.dtypes.iteritems():
-     if col_type == 'O':
-          categoricals.append(col)
-     else:
-          df_[col].fillna(0, inplace=True)
-
-df_ohe = pd.get_dummies(df_, columns=categoricals, dummy_na=True)
-
-# Logistic Regression classifier
 from sklearn.linear_model import LogisticRegression
-dependent_variable = 'difficultyLevel'
-x = df_ohe[df_ohe.columns.difference([dependent_variable])]
-y = df_ohe[dependent_variable]
-lr = LogisticRegression()
-lr.fit(x, y)
 
-# Save your model
-from sklearn.externals import joblib
-joblib.dump(lr, 'model.pkl')
-print("Model dumped!")
+# create df
+train = pd.read_csv('PlayerData_1.csv')
 
-# Load the model that you just saved
-lr = joblib.load('model.pkl')
+# drop null values
+train.dropna(inplace=True)
 
-# Saving the data columns from training
-model_columns = list(x.columns)
-joblib.dump(model_columns, 'model_columns.pkl')
-print("Models columns dumped!")
+# features and target
+target = 'difficultyLevel'
+features = ['scoreLevel', 'timeLevel']
+
+# X matrix, y vector
+X = train[features]
+y = train[target]
+
+# model 
+model = LogisticRegression()
+model.fit(X, y)
+model.score(X,y)
+
+train.head()
+
+
+import pickle
+pickle.dump(model, open('model.pkl', 'wb'))

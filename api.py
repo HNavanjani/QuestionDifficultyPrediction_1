@@ -13,7 +13,7 @@ app = Flask(__name__)
 def hello():
     return "hey"
 
-@app.route('/predict', methods=['POST'])
+@app.route('/predict', methods=['POST', 'GET'])
 def predict():
     if lr:
         try:
